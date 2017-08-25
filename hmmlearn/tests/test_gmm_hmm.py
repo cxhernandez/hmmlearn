@@ -42,8 +42,8 @@ class GMMHMMTestMixin(object):
         h = hmm.GMMHMM(self.n_components, covariance_type=self.covariance_type)
 
         prng = check_random_state(prng)
-        h.means_ = prng.randint(-20, 20, (self.n_components, 5))
-        h.weights_ = 0.2 * np.ones((self.n_components, 5))
+        h.means_ = prng.randint(-20, 20, (self.n_components, self.n_features))
+        h.weights_ = np.ones((self.n_components, self.n_mix)) / self.n_features
         h.startprob_ = self.startprob
         h.transmat_ = self.transmat
         h.gmms_ = self.gmms
