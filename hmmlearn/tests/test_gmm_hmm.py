@@ -46,8 +46,7 @@ class GMMHMMTestMixin(object):
         h.means_ = prng.randint(-20, 20,
                                 (self.n_components, self.n_mix,
                                  self.n_features))
-        h.covars_ = make_covar_matrix(self.covariance_type,
-                                      self.n_mix, self.n_features)
+        h.covars_ = 3 * [make_covar_matrix(self.covariance_type, self.n_mix, self.n_features)]
         h.weights_ = np.ones((self.n_components, self.n_mix)) / self.n_features
         h.startprob_ = self.startprob
         h.transmat_ = self.transmat
