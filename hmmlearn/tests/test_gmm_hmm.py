@@ -39,7 +39,8 @@ class GMMHMMTestMixin(object):
                 prng=self.prng))
 
     def test_score_samples_and_decode(self, prng=0):
-        h = hmm.GMMHMM(self.n_components, covariance_type=self.covariance_type)
+        h = hmm.GMMHMM(self.n_components, n_mix=self.n_mix,
+                       covariance_type=self.covariance_type)
 
         prng = check_random_state(prng)
         h.means_ = prng.randint(-20, 20, (self.n_components, self.n_features))
