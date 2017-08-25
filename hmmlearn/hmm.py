@@ -745,8 +745,8 @@ class GMMHMM(_BaseHMM):
         }
         needed_shape = needed_shapes[self.covariance_type]
         if covars_shape != needed_shape:
-            raise ValueError("{!r} mixture covars must have shape {0}, "
-                             "actual shape: {1}"
+            raise ValueError("{} mixture covars must have shape {}, "
+                             "actual shape: {}"
                              .format(self.covariance_type,
                                      needed_shape, covars_shape))
 
