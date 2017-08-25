@@ -11,7 +11,7 @@ from sklearn.utils import check_array, check_random_state
 from sklearn.utils.validation import check_is_fitted
 
 from . import _hmmc
-from .utils import normalize, log_normalize, iter_from_X_lengths
+from .utils import normalize, log_normalize, iter_from_X_lengths, log_mask_zero
 
 
 #: Supported decoder algorithms.
@@ -97,7 +97,7 @@ class _BaseHMM(BaseEstimator):
     """Base class for Hidden Markov Models.
 
     This class allows for easy evaluation of, sampling from, and
-    maximum-likelihood estimation of the parameters of a HMM.
+    maximum a posteriori estimation of the parameters of a HMM.
 
     See the instance documentation for details specific to a
     particular object.
@@ -107,17 +107,19 @@ class _BaseHMM(BaseEstimator):
     n_components : int
         Number of states in the model.
 
-    startprob_prior : array, shape (n_components, )
-        Initial state occupation prior distribution.
+    startprob_prior : array, shape (n_components, ), optional
+        Parameters of the Dirichlet prior distribution for
+        :attr:`startprob_`.
 
-    transmat_prior : array, shape (n_components, n_components)
-        Matrix of prior transition probabilities between states.
+    transmat_prior : array, shape (n_components, n_components), optional
+        Parameters of the Dirichlet prior distribution for each row
+        of the transition probabilities :attr:`transmat_`.
 
-    algorithm : string
+    algorithm : string, optional
         Decoder algorithm. Must be one of "viterbi" or "map".
         Defaults to "viterbi".
 
-    random_state: RandomState or an int seed
+    random_state: RandomState or an int seed, optional
         A random number generator instance.
 
     n_iter : int, optional
@@ -373,6 +375,7 @@ class _BaseHMM(BaseEstimator):
             State sequence produced by the model.
         """
         check_is_fitted(self, "startprob_")
+        self._check()
 
         if random_state is None:
             random_state = self.random_state
@@ -448,16 +451,16 @@ class _BaseHMM(BaseEstimator):
     def _do_viterbi_pass(self, framelogprob):
         n_samples, n_components = framelogprob.shape
         state_sequence, logprob = _hmmc._viterbi(
-            n_samples, n_components, np.log(self.startprob_),
-            np.log(self.transmat_), framelogprob)
+            n_samples, n_components, log_mask_zero(self.startprob_),
+            log_mask_zero(self.transmat_), framelogprob)
         return logprob, state_sequence
 
     def _do_forward_pass(self, framelogprob):
         n_samples, n_components = framelogprob.shape
         fwdlattice = np.zeros((n_samples, n_components))
         _hmmc._forward(n_samples, n_components,
-                       np.log(self.startprob_),
-                       np.log(self.transmat_),
+                       log_mask_zero(self.startprob_),
+                       log_mask_zero(self.transmat_),
                        framelogprob, fwdlattice)
         return logsumexp(fwdlattice[-1]), fwdlattice
 
@@ -465,8 +468,8 @@ class _BaseHMM(BaseEstimator):
         n_samples, n_components = framelogprob.shape
         bwdlattice = np.zeros((n_samples, n_components))
         _hmmc._backward(n_samples, n_components,
-                        np.log(self.startprob_),
-                        np.log(self.transmat_),
+                        log_mask_zero(self.startprob_),
+                        log_mask_zero(self.transmat_),
                         framelogprob, bwdlattice)
         return bwdlattice
 
@@ -619,11 +622,12 @@ class _BaseHMM(BaseEstimator):
             if n_samples <= 1:
                 return
 
-            lneta = np.zeros((n_samples - 1, n_components, n_components))
-            _hmmc._compute_lneta(n_samples, n_components, fwdlattice,
-                                 np.log(self.transmat_),
-                                 bwdlattice, framelogprob, lneta)
-            stats['trans'] += np.exp(logsumexp(lneta, axis=0))
+            log_xi_sum = np.full((n_components, n_components), -np.inf)
+            _hmmc._compute_log_xi_sum(n_samples, n_components, fwdlattice,
+                                      log_mask_zero(self.transmat_),
+                                      bwdlattice, framelogprob,
+                                      log_xi_sum)
+            stats['trans'] += np.exp(log_xi_sum)
 
     def _do_mstep(self, stats):
         """Performs the M-step of EM algorithm.

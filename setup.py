@@ -39,7 +39,6 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 2.6",
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: 3.5",
 ]
@@ -48,7 +47,7 @@ import hmmlearn
 
 VERSION = hmmlearn.__version__
 
-install_requires = ["sklearn>=0.16"]
+install_requires = ["numpy", "scikit-learn>=0.16"]
 tests_require = install_requires + ["pytest"]
 docs_require = install_requires + [
     "Sphinx", "sphinx-gallery", "numpydoc", "Pillow", "matplotlib"
@@ -70,6 +69,7 @@ setup_options = dict(
                   extra_compile_args=["-O3"],
                   **get_info("npymath"))
     ],
+    install_requires=install_requires,
     tests_require=tests_require,
     extras_require={
         "tests": tests_require,

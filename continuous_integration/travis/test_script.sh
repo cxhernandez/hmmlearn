@@ -8,7 +8,17 @@
 
 set -e
 
+# Get into a temp directory to run test from the installed hmmlearn and
+# check if we do not leave artifacts
+mkdir -p $TEST_DIR
+cd $TEST_DIR
+
 python --version
 python -c "import sklearn; print('sklearn %s' % sklearn.__version__)"
 
-make test
+if [[ "$COVERAGE" == "true" ]]; then
+    py.test -s -v --cov=hmmlearn --doctest-modules --durations=10 \
+            --pyargs hmmlearn
+else
+    py.test -s -v --doctest-modules --durations=10 --pyargs hmmlearn
+fi
