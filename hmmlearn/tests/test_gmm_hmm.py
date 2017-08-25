@@ -21,7 +21,7 @@ def create_random_gmm(n_mix, n_features, covariance_type, prng=0):
 
 
 class GMMHMMTestMixin(object):
-    def setup_method(self, method):
+    def __init__(self):
         self.prng = np.random.RandomState(9)
         self.n_components = 3
         self.n_mix = 2
