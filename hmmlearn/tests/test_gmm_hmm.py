@@ -70,8 +70,8 @@ class GMMHMMTestMixin(object):
         assert X.shape == (n_samples, self.n_features)
         assert len(state_sequence) == n_samples
 
-    @pytest.mark.parametrize("params", ["stmwc", "wt", "m"])
-    def test_fit(self, params, n_iter=5):
+    # @pytest.mark.parametrize("params", ["stmwc", "wt", "m"])
+    def test_fit(self, n_iter=5):
         h = hmm.GMMHMM(self.n_components, covariance_type=self.covariance_type,
                        covars_prior=1.0)
         h.startprob_ = self.startprob

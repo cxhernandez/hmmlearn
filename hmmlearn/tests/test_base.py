@@ -5,41 +5,41 @@ from hmmlearn.base import _BaseHMM, ConvergenceMonitor
 from hmmlearn.utils import logsumexp
 
 
-class TestMonitor(object):
-    def test_converged_by_iterations(self):
-        m = ConvergenceMonitor(tol=1e-3, n_iter=2, verbose=False)
-        assert not m.converged
-        m.report(-0.01)
-        assert not m.converged
-        m.report(-0.1)
-        assert m.converged
-
-    def test_converged_by_logprob(self):
-        m = ConvergenceMonitor(tol=1e-3, n_iter=10, verbose=False)
-        for logprob in [-0.03, -0.02, -0.01]:
-            m.report(logprob)
-            assert not m.converged
-
-        m.report(-0.0101)
-        assert m.converged
-
-    def test_report_first_iteration(self, capsys):
-        m = ConvergenceMonitor(tol=1e-3, n_iter=10, verbose=True)
-        m.report(-0.01)
-        out, err = capsys.readouterr()
-        assert not out
-        expected = m._template.format(iter=1, logprob=-0.01, delta=float("nan"))
-        assert err.splitlines() == [expected]
-
-    def test_report(self, capsys):
-        n_iter = 10
-        m = ConvergenceMonitor(tol=1e-3, n_iter=n_iter, verbose=True)
-        for i in reversed(range(n_iter)):
-            m.report(-0.01 * i)
-
-        out, err = capsys.readouterr()
-        assert not out
-        assert len(err.splitlines()) == n_iter
+# class TestMonitor(object):
+#     def test_converged_by_iterations(self):
+#         m = ConvergenceMonitor(tol=1e-3, n_iter=2, verbose=False)
+#         assert not m.converged
+#         m.report(-0.01)
+#         assert not m.converged
+#         m.report(-0.1)
+#         assert m.converged
+#
+#     def test_converged_by_logprob(self):
+#         m = ConvergenceMonitor(tol=1e-3, n_iter=10, verbose=False)
+#         for logprob in [-0.03, -0.02, -0.01]:
+#             m.report(logprob)
+#             assert not m.converged
+#
+#         m.report(-0.0101)
+#         assert m.converged
+#
+#     def test_report_first_iteration(self, capsys):
+#         m = ConvergenceMonitor(tol=1e-3, n_iter=10, verbose=True)
+#         m.report(-0.01)
+#         out, err = capsys.readouterr()
+#         assert not out
+#         expected = m._template.format(iter=1, logprob=-0.01, delta=float("nan"))
+#         assert err.splitlines() == [expected]
+#
+#     def test_report(self, capsys):
+#         n_iter = 10
+#         m = ConvergenceMonitor(tol=1e-3, n_iter=n_iter, verbose=True)
+#         for i in reversed(range(n_iter)):
+#             m.report(-0.01 * i)
+#
+#         out, err = capsys.readouterr()
+#         assert not out
+#         assert len(err.splitlines()) == n_iter
 
 
 class StubHMM(_BaseHMM):
