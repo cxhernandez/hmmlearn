@@ -14,7 +14,7 @@ class TestMultinomialAgainstWikipedia(object):
     - http://en.wikipedia.org/wiki/Hidden_Markov_model
     - http://en.wikipedia.org/wiki/Viterbi_algorithm
     """
-    def setup_method(self, method):
+    def __init__(self):
         n_components = 2   # ['Rainy', 'Sunny']
         n_features = 3     # ['walk', 'shop', 'clean']
         self.h = hmm.MultinomialHMM(n_components)
@@ -52,7 +52,7 @@ class TestMultinomialAgainstWikipedia(object):
 
 
 class TestMultinomailHMM(object):
-    def setup_method(self, method):
+    def __init__(self):
         self.n_components = 2
         self.n_features = 3
         self.h = hmm.MultinomialHMM(self.n_components)
