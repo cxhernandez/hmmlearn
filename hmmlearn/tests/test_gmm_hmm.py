@@ -39,7 +39,7 @@ class GMMHMMTestMixin(object):
                 prng=self.prng))
 
     def test_score_samples_and_decode(self, prng=0):
-        h = hmm.GMMHMM(self.n_components, n_mix=self.n_mix,
+        h = hmm.GMMHMM(n_components=self.n_components, n_mix=self.n_mix,
                        covariance_type=self.covariance_type)
 
         prng = check_random_state(prng)
@@ -67,7 +67,8 @@ class GMMHMMTestMixin(object):
         assert np.allclose(stateseq, refstateseq)
 
     def test_sample(self, n_samples=1000):
-        h = hmm.GMMHMM(self.n_components, covariance_type=self.covariance_type)
+        h = hmm.GMMHMM(n_components=self.n_components, n_mix=self.n_mix,
+                       covariance_type=self.covariance_type)
         h.startprob_ = self.startprob
         h.transmat_ = self.transmat
         h.gmms_ = self.gmms
@@ -77,7 +78,8 @@ class GMMHMMTestMixin(object):
 
     # @pytest.mark.parametrize("params", ["stmwc", "wt", "m"])
     def test_fit(self, n_iter=5):
-        h = hmm.GMMHMM(self.n_components, covariance_type=self.covariance_type,
+        h = hmm.GMMHMM(n_components=self.n_components, n_mix=self.n_mix,
+                       covariance_type=self.covariance_type,
                        covars_prior=1.0)
         h.startprob_ = self.startprob
         h.transmat_ = normalized(
@@ -100,7 +102,8 @@ class GMMHMMTestMixin(object):
         lengths = [3, 4, 5]
         X = self.prng.rand(sum(lengths), self.n_features)
 
-        h = hmm.GMMHMM(self.n_components, covariance_type=self.covariance_type)
+        h = hmm.GMMHMM(n_components=self.n_components, n_mix=self.n_mix,
+                       covariance_type=self.covariance_type)
         # This shouldn't raise
         # ValueError: setting an array element with a sequence.
         h.fit(X, lengths=lengths)
