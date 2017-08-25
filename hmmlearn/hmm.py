@@ -703,7 +703,7 @@ class GMMHMM(_BaseHMM):
         super(GMMHMM, self)._check()
 
         if not hasattr(self, "n_features"):
-            self.n_features = self.means_.shape[2]
+            self.n_features = self.means_.shape[1]
 
         self._init_covar_priors()
         self._fix_priors_shape()
