@@ -43,6 +43,7 @@ class GMMHMMTestMixin(object):
 
         prng = check_random_state(prng)
         h.means_ = prng.randint(-20, 20, (self.n_components, 5))
+        h.weights_ = 0.2 * np.ones(self.n_components, 5)
         h.startprob_ = self.startprob
         h.transmat_ = self.transmat
         h.gmms_ = self.gmms
